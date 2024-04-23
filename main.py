@@ -10,6 +10,7 @@ def Choose_color():
 
 root = Tk()
 frm = ttk.Frame(root, padding=10)
+root.title("BAINT")
 frm.grid()
 ttk.Button(frm, text="Choose Color", command=Choose_color).grid(column=0, row=0)
 root.mainloop()
