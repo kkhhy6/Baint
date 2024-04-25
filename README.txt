@@ -1,28 +1,13 @@
 Baint
-Podział funkcjonalności ze względu na użyte biblioteki:
-  •	TK:
-      o	Rozmiar pisaka
-      o	Wybór koloru
-      o	Import bitmapy
-      o	Export bitmapy
-      o	Nowa bitmapa
-      o	Rozmiar bitmapy
-  •	Pygame:
-      o	Edycja bitmapy
-    
+
 Plan aplikacji:
-  •	Main menu:
-      o	Nowa bitmapa
-      o	Rozmiar obrazu
+  • Pasek narzedzi:(sprawdzić notatnik dla referencji)
+      o	Nowa bitmapa:
+      	     o Okno dialogowe do ustawienia rozmiaru obrazu
       o	Import bitmapy
-Okna uruchamiane równocześnie przy wybraniu dowolnej opcji w menu:
-  •	Okno edytora:
-      o	Nakładanie pikseli w pygamie
-  •	Okno opcji:
+      o Export bitmapy
+  • Opcje dostępne w formie przycisków uruchamiających okna dialogowe: #do rozważenia umieszczenie w pasku narzędzi zamiast przycisku
       o	Rozmiar pisaka
       o Wybór koloru
-      o	Export bitmapy
-      o	Powrót 
-
-
-
+  • Edytor:
+      o Miejsce do edytowania bitmapy
