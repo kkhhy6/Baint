@@ -161,7 +161,7 @@ for menu_name in menu_tree:
     )
 
 
-#!IMPORTANT, canvas use real pixels, only way to make pixel on bitmap bigger on screen is resizing photo, possible solution will be included in 'CanvasIssue.txt'(file not added yet, will be created soon)
+#!IMPORTANT, canvas use real pixels, only way to make pixel on bitmap bigger on screen is resizing photo, no other possible solution is known now, we should ask teacher
 canvas = Canvas(root, cursor="circle", width=300, height=300, bg="#ffffff")#creating canva to draw on, setting circle cursor to make drawing experience better
 canvas.grid()#creating grid for canvas
 
