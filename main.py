@@ -16,7 +16,7 @@ class BrushSizeDialog(Toplevel):
     def __init__(self):
         # create window and set properties
         super().__init__(root)
-        self.title("rozmiar pedzla")
+        self.title("Brush size")
         self.rowconfigure(0, weight=2)
         self.columnconfigure(0, weight=1)
         self.transient(root)
@@ -62,7 +62,7 @@ class BrushSizeDialog(Toplevel):
         #create widgets for bottom_frame
         cancel_button = ttk.Button(
             bottom_frame,
-            text = "Anuluj",
+            text = "Cancel",
             command = self.close
         )
         ok_button = ttk.Button(
@@ -73,11 +73,11 @@ class BrushSizeDialog(Toplevel):
         cancel_button.grid(column=0, row=0, padx=10, pady=10)
         ok_button.grid(column=1, row=0, padx=10, pady=10)
         
-    def close(self, event=None):
+    def close(self, event=None):#closing window
         self.destroy()
     
-    def set_slider_to_int(self, num):
-        if float(num).is_integer():
+    def set_slider_to_int(self, num):#user can change brush size using slider
+        if float(num).is_integer():#checking is 'num' an int to avoid errors
             pass
         else:
             new = int(float(num))
@@ -86,7 +86,7 @@ class BrushSizeDialog(Toplevel):
     def set_spinbox_to_int(self):
         current = self.spinbox.get()
         current = float(current)
-        if current.is_integer():
+        if current.is_integer():#checking is 'current' an int to avoid errors
             pass
         else:
             new = int(current)
@@ -100,23 +100,25 @@ class BrushSizeDialog(Toplevel):
 
      
 previous = (0,0)#creating variable "previous" to check last mouse location
-def select(event): #funcion to draw indyvidual pixels
+def select(event): #funcion to draw dots
     global previous
     #widget = event.widget
     top_left = (event.x - brush_size/2, event.y - brush_size/2)
     bottom_right = (event.x + brush_size/2, event.y + brush_size/2)
     canvas.create_oval(*top_left, *bottom_right, outline=brush_color, fill=brush_color)
-    # canvas.create_line(event.x, event.y, event.x + 1, event.y, width=brush_size)#creating line that actually is a dot
-    previous = (event.x, event.y)
-    print(brush_size)
+    # canvas.create_line(event.x, event.y, event.x + 1, event.y, width=brush_size)
+    previous = (event.x, event.y)#changng previous so it will be accurate next time
+    print(brush_size)#debug log
 
 
 def drag(event): #function to draw lines when dragging mouse
     global previous
-    canvas.create_line(previous[0], previous[1], event.x, event.y, fill=brush_color, width=brush_size) #creating line (this time it is a line) when dragging mouse
+    canvas.create_line(previous[0], previous[1], event.x, event.y, fill=brush_color, width=brush_size)
+    #!Important, this feature is currently bugged, it isn't drawing how it is supposed to look like
+    #possible fix(isn't tested) can be changing it from line to oval, this may make this function unnecesarry
     widget = event.widget
     previous = (event.x, event.y)#changng previous so it will be accurate next time
-    print(brush_size)
+    print(brush_size)#debug log
 
 do_nothing = lambda: None
 
@@ -162,8 +164,6 @@ for menu_name in menu_tree:
 #!IMPORTANT, canvas use real pixels, only way to make pixel on bitmap bigger on screen is resizing photo, possible solution will be included in 'CanvasIssue.txt'(file not added yet, will be created soon)
 canvas = Canvas(root, cursor="circle", width=300, height=300, bg="#ffffff")#creating canva to draw on, setting circle cursor to make drawing experience better
 canvas.grid()#creating grid for canvas
-#next line is made for debugging window size, keep commented if unnecessary
-#line = canvas.create_line(0,0,100,100)
 
 # Bind mouse events to methods (could also be in the constructor)
 canvas.bind("<Button-1>", select)
