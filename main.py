@@ -138,7 +138,7 @@ menu_tree = {
         ["new", do_nothing],
         ["import", do_nothing],
         ["export", do_nothing],
-        ["exit", do_nothing],
+        ["exit", root.destroy],
     ],
     "brush": [
         ["color", Choose_color],
