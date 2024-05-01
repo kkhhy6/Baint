@@ -100,13 +100,21 @@ class BrushSizeDialog(Toplevel):
 
      
 previous = (0,0)#creating variable "previous" to check last mouse location
+
+def draw_circle(center):
+    x = center[0]
+    y = center[1]
+    radius = brush_size / 2
+    top_left = (x - radius, y - radius)
+    bottom_right = (x + radius - 1, y + radius - 1)
+    canvas.create_oval(*top_left, *bottom_right, outline=brush_color, fill=brush_color)
+
+
+
 def select(event): #funcion to draw dots
     global previous
-    #widget = event.widget
-    top_left = (event.x - brush_size/2, event.y - brush_size/2)
-    bottom_right = (event.x + brush_size/2, event.y + brush_size/2)
-    canvas.create_oval(*top_left, *bottom_right, outline=brush_color, fill=brush_color)
-    # canvas.create_line(event.x, event.y, event.x + 1, event.y, width=brush_size)
+    #widget = event.widget 
+    draw_circle((event.x, event.y))
     previous = (event.x, event.y)#changng previous so it will be accurate next time
     print(brush_size)#debug log
 
@@ -114,6 +122,7 @@ def select(event): #funcion to draw dots
 def drag(event): #function to draw lines when dragging mouse
     global previous
     canvas.create_line(previous[0], previous[1], event.x, event.y, fill=brush_color, width=brush_size)
+    draw_circle((event.x, event.y))
     #!Important, this feature is currently bugged, it isn't drawing how it is supposed to look like
     #possible fix(isn't tested) can be changing it from line to oval, this may make this function unnecesarry
     widget = event.widget
