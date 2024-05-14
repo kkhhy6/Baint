@@ -4,12 +4,57 @@ from tkinter import ttk
 brush_color = "black"
 brush_size = 10
 
-
 def Choose_color():
     #asking user to choose color using deafult color choosing dialog window
     global brush_color
     brush_color = colorchooser.askcolor()[1]#getting color value, "[1]" gets only hex skipping rgb value
     print(brush_color) #debug log with hexadecimal value
+
+def New_image():
+    print("new")
+    canvas.delete("all")
+    WSize = Toplevel()
+    WSize.title("Set painting space size")
+    WSize.transient(root)
+    WSize.grab_set()
+    
+    HLabel = ttk.Label(WSize, text="Heigth")
+    HLabel.grid(column=0,row=0,padx=10,pady=10)
+    WLabel = ttk.Label(WSize, text="Widht")
+    WLabel.grid(column=0,row=1,padx=10,pady=10)
+    
+    MinHeight=1
+    current_height= DoubleVar(value=MinHeight)
+    height = ttk.Spinbox(
+            WSize,
+            from_=1,
+            to_=1000000,
+            textvariable=current_height,
+            )
+    height.grid(column=1, row=0, padx=10, pady=10)
+
+    MinWidht=1
+    current_widht= DoubleVar(value=MinWidht)
+    widht = ttk.Spinbox(
+            WSize,
+            from_=1,
+            to_=1000000,
+            textvariable=current_widht,
+            )
+    widht.grid(column=1, row=1, padx=10, pady=10)
+    
+    def NewWindowSize():
+        int_width = int(widht.get())
+        int_height = int(height.get())
+        canvas.config(width=int_width, height=int_height)
+        WSize.destroy()
+        
+    ok_button = ttk.Button(
+            WSize,
+            text = "Ok",
+            command=NewWindowSize)
+    ok_button.grid(column=2, row=2, padx=10, pady=10)
+
 
 
 class BrushSizeDialog(Toplevel):
@@ -146,7 +191,7 @@ root.config(menu=menubar)
 
 menu_tree = {
     "file": [
-        ["new", do_nothing],
+        ["new", New_image],
         ["import", do_nothing],
         ["export", do_nothing],
         ["exit", root.destroy],
@@ -170,7 +215,6 @@ for menu_name in menu_tree:
     )
 
 
-#!IMPORTANT, canvas use real pixels, only way to make pixel on bitmap bigger on screen is resizing photo, no other possible solution is known now, we should ask teacher
 canvas = Canvas(root, cursor="circle", width=300, height=300, bg="#ffffff")#creating canva to draw on, setting circle cursor to make drawing experience better
 canvas.grid()#creating grid for canvas
 
