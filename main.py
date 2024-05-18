@@ -1,26 +1,87 @@
 from tkinter import *
 from tkinter import colorchooser
 from tkinter import ttk
+from tkinter import filedialog
+from tkinter import messagebox
+from io import BytesIO
+from os import path
+
+try:
+    from PIL import Image, ImageTk
+except ImportError:
+    print("pillow must be installed for open/save to work")
+
+
 brush_color = "black"
 brush_size = 10
+current_image_path = None
+old_image_path = None
+
+
+def set_title():
+    if current_image_path:
+        root.title(f"{path.split(current_image_path)[1]} - BAINT")
+    else:
+        root.title("untitled - BAINT")
+
+def get_current_image_path():
+    if current_image_path == None:
+        set_current_image_path(filedialog.asksaveasfilename())
+    return current_image_path
+
+def set_current_image_path(new):
+    global current_image_path, old_image_path
+    old_image_path = current_image_path
+    current_image_path = new
+    set_title()
+
+def restore_image_path():
+    global current_image_path
+    current_image_path = old_image_path
+    set_title()
+
+def open_image():
+    file_path = filedialog.askopenfilename()
+    image = Image.open(file_path)
+    photo = ImageTk.PhotoImage(image)
+    canvas.config(width=photo.width(), height=photo.height())
+    canvas.create_image(0, 0, anchor=NW, image=photo)
+    canvas.image = photo
+    set_current_image_path(file_path)
+
+
+def save():
+    print(current_image_path, old_image_path)
+    ps = canvas.postscript(colormode='color')
+    image = Image.open(BytesIO(ps.encode('utf-8')))
+    try:
+        image.save(get_current_image_path())
+    except:
+        restore_image_path()
+        messagebox.showwarning(title="warning", message="wrong path")
+
+def save_as():
+    set_current_image_path(filedialog.asksaveasfilename())
+    save()
+    
+def save_current():
+    save(image_path=get_current_image_path())
 
 def Choose_color():
     #asking user to choose color using deafult color choosing dialog window
     global brush_color
     brush_color = colorchooser.askcolor()[1]#getting color value, "[1]" gets only hex skipping rgb value
-    print(brush_color) #debug log with hexadecimal value
 
 def New_image():
-    print("new")
     canvas.delete("all")
     WSize = Toplevel()
     WSize.title("Set painting space size")
     WSize.transient(root)
     WSize.grab_set()
     
-    HLabel = ttk.Label(WSize, text="Heigth")
+    HLabel = ttk.Label(WSize, text="Height")
     HLabel.grid(column=0,row=0,padx=10,pady=10)
-    WLabel = ttk.Label(WSize, text="Widht")
+    WLabel = ttk.Label(WSize, text="Width")
     WLabel.grid(column=0,row=1,padx=10,pady=10)
     
     MinHeight=1
@@ -33,19 +94,23 @@ def New_image():
             )
     height.grid(column=1, row=0, padx=10, pady=10)
 
-    MinWidht=1
-    current_widht= DoubleVar(value=MinWidht)
-    widht = ttk.Spinbox(
+    MinWidth=1
+    current_width= DoubleVar(value=MinWidth)
+    width = ttk.Spinbox(
             WSize,
             from_=1,
             to_=1000000,
-            textvariable=current_widht,
+            textvariable=current_width,
             )
-    widht.grid(column=1, row=1, padx=10, pady=10)
+    width.grid(column=1, row=1, padx=10, pady=10)
     
     def NewWindowSize():
-        int_width = int(widht.get())
-        int_height = int(height.get())
+        try:
+            int_width = int(width.get())
+            int_height = int(height.get())
+        except ValueError:
+            messagebox.showwarning(title="warning", message="wrong size")
+            return
         canvas.config(width=int_width, height=int_height)
         WSize.destroy()
         
@@ -139,8 +204,11 @@ class BrushSizeDialog(Toplevel):
 
     def accept_new_size(self):
         global brush_size
-        brush_size = int(self.current_value.get())
-        print(brush_size)
+        try:
+            brush_size = int(self.current_value.get())
+        except:
+            messagebox.showwarning(title="warning", message="size must be a number")
+            return
         self.close()
 
      
@@ -161,7 +229,6 @@ def select(event): #funcion to draw dots
     #widget = event.widget 
     draw_circle((event.x, event.y))
     previous = (event.x, event.y)#changng previous so it will be accurate next time
-    print(brush_size)#debug log
 
 
 def drag(event): #function to draw lines when dragging mouse
@@ -172,14 +239,12 @@ def drag(event): #function to draw lines when dragging mouse
     #possible fix(isn't tested) can be changing it from line to oval, this may make this function unnecesarry
     widget = event.widget
     previous = (event.x, event.y)#changng previous so it will be accurate next time
-    print(brush_size)#debug log
 
 do_nothing = lambda: None
 
 root = Tk()
 root.minsize(400,500) # setting minimal windows size STC
-root.title("BAINT") # setting window title
-
+set_title()
 application = ttk.Frame(root, padding=10) # creating frame for root window
 application.grid()#adding grid to frame created 2 lines ago
 
@@ -192,8 +257,9 @@ root.config(menu=menubar)
 menu_tree = {
     "file": [
         ["new", New_image],
-        ["import", do_nothing],
-        ["export", do_nothing],
+        ["open", open_image],
+        ["save_as", save_as],
+        ["save", save],
         ["exit", root.destroy],
     ],
     "brush": [
