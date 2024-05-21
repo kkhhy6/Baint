@@ -15,6 +15,6 @@ Plan aplikacji:
   	* Brush
       	* Rozmiar pisaka
       	* Wybór koloru
-  * Edytor:
-      * Miejsce do edytowania bitmapy
+* Edytor:
+	* Miejsce do edytowania bitmapy
 
