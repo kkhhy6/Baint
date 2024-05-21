@@ -5,11 +5,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from io import BytesIO
 from os import path
-
-try:
-    from PIL import Image, ImageTk
-except ImportError:
-    print("pillow must be installed for open/save to work")
+from PIL import Image, ImageTk, UnidentifiedImageError
 
 
 brush_color = "black"
@@ -42,7 +38,11 @@ def restore_image_path():
 
 def open_image():
     file_path = filedialog.askopenfilename()
-    image = Image.open(file_path)
+    try:
+        image = Image.open(file_path)
+    except UnidentifiedImageError:
+        messagebox.showwarning(title="warning", message="wrong file")
+        return
     photo = ImageTk.PhotoImage(image)
     canvas.config(width=photo.width(), height=photo.height())
     canvas.create_image(0, 0, anchor=NW, image=photo)
@@ -63,9 +63,6 @@ def save():
 def save_as():
     set_current_image_path(filedialog.asksaveasfilename())
     save()
-    
-def save_current():
-    save(image_path=get_current_image_path())
 
 def Choose_color():
     #asking user to choose color using deafult color choosing dialog window
@@ -128,7 +125,6 @@ class BrushSizeDialog(Toplevel):
         super().__init__(root)
         self.title("Brush size")
         self.rowconfigure(0, weight=2)
-        self.columnconfigure(0, weight=1)
         self.transient(root)
         self.grab_set()
         self.bind("<Escape>", self.close)
@@ -240,7 +236,6 @@ def drag(event): #function to draw lines when dragging mouse
     widget = event.widget
     previous = (event.x, event.y)#changng previous so it will be accurate next time
 
-do_nothing = lambda: None
 
 root = Tk()
 root.minsize(400,500) # setting minimal windows size STC
